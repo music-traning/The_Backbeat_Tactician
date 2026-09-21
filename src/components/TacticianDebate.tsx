@@ -20,7 +20,7 @@ export default function TacticianDebate() {
     calibrationOffset, setCalibrationOffset,
     clearedStages, addClearedStage,
     playMode, setPlayMode,
-    playerData, resetPlayerData
+    playerData, updatePlayerData, resetPlayerData
   } = useGame();
   
   // Rhythm Detector Hook

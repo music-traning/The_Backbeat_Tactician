@@ -29,12 +29,16 @@ const SCHEDULE_AHEAD_TIME = 0.1; // s
 const TRANSIENT_THRESHOLD = 0.1; // amplitude threshold for detecting transient
 
 interface UseRhythmDetectorProps {
-  initialOffset: number;
-  onOffsetChange: (offset: number) => void;
-  playMode: 'just' | 'laidback';
+  initialOffset?: number;
+  onOffsetChange?: (offset: number) => void;
+  playMode?: 'just' | 'laidback';
 }
 
-export const useRhythmDetector = ({ initialOffset, onOffsetChange, playMode }: UseRhythmDetectorProps): UseRhythmDetectorReturn => {
+export const useRhythmDetector = ({ 
+  initialOffset = 0, 
+  onOffsetChange, 
+  playMode = 'just' 
+}: UseRhythmDetectorProps = {}): UseRhythmDetectorReturn => {
   const [state, setState] = useState<DetectorState>('idle');
   const [latencyOffset, setLatencyOffsetState] = useState<number>(initialOffset);
   const latencyOffsetRef = useRef<number>(initialOffset);
@@ -42,7 +46,9 @@ export const useRhythmDetector = ({ initialOffset, onOffsetChange, playMode }: U
   const setLatencyOffset = (val: number) => {
     setLatencyOffsetState(val);
     latencyOffsetRef.current = val;
-    onOffsetChange(val);
+    if (onOffsetChange) {
+      onOffsetChange(val);
+    }
   };
 
   const [tempo, setTempoState] = useState<number>(120);
@@ -207,7 +213,7 @@ export const useRhythmDetector = ({ initialOffset, onOffsetChange, playMode }: U
         dataArrayRef.current = new Float32Array(bufferLength);
     }
     const dataArray = dataArrayRef.current;
-    analyserRef.current.getFloatTimeDomainData(dataArray);
+    analyserRef.current.getFloatTimeDomainData(dataArray as unknown as Float32Array<ArrayBuffer>);
 
     if (isMeasuringNoiseRef.current) {
         let maxVal = 0;
