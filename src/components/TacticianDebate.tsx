@@ -39,8 +39,8 @@ export default function TacticianDebate() {
     initialOffset: calibrationOffset,
     onOffsetChange: setCalibrationOffset,
     playMode,
-    metronomePattern: currentStage?.metronomePattern || '全拍',
-    targetBeat: currentStage?.targetBeat || '表拍'
+    metronomePattern: (currentStage?.metronomePattern || '全拍') as "全拍" | "2・4拍" | "1・3拍" | "4拍目のみ",
+    targetBeat: (currentStage?.targetBeat || '表拍') as "表拍" | "裏拍"
   });
   
   // Measurement Result State
