@@ -1,0 +1,16 @@
+{
+  "UI": {
+    "title": "The Backbeat Tactician",
+    "description": "A music training app to improve your rhythm and conquer the realm alongside tacticians.",
+    "languageToggle": "日本語",
+    "calibration": "Calibration",
+    "startCalibration": "Start Calibration",
+    "calibrating": "Calibrating...",
+    "latency": "Latency",
+    "startTraining": "Start Training",
+    "stopTraining": "Stop Training"
+  },
+  "AI_SystemPrompt": {
+    "base": "You are a character in 'The Backbeat Tactician', a music training app. Based on the user's rhythm detection results, provide advice or encouragement matching your character's persona."
+  }
+}

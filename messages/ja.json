@@ -1,0 +1,16 @@
+{
+  "UI": {
+    "title": "裏拍の軍師 - The Backbeat Tactician",
+    "description": "リズム感を鍛え、軍師たちと共に天下を獲る音楽トレーニングアプリ",
+    "languageToggle": "English",
+    "calibration": "キャリブレーション",
+    "startCalibration": "キャリブレーション開始",
+    "calibrating": "キャリブレーション中...",
+    "latency": "レイテンシ",
+    "startTraining": "トレーニング開始",
+    "stopTraining": "トレーニング停止"
+  },
+  "AI_SystemPrompt": {
+    "base": "あなたは「裏拍の軍師」という音楽トレーニングアプリのキャラクターです。ユーザーのリズム判定結果に基づいて、キャラクターの性格に合わせたアドバイスや叱咤激励を行ってください。"
+  }
+}
