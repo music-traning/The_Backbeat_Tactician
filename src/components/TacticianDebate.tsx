@@ -20,7 +20,8 @@ export default function TacticianDebate() {
     calibrationOffset, setCalibrationOffset,
     clearedStages, addClearedStage,
     playMode, setPlayMode,
-    playerData, updatePlayerData, resetPlayerData
+    playerData, updatePlayerData, resetPlayerData,
+    isLoaded
   } = useGame();
   
   // Rhythm Detector Hook
@@ -142,6 +143,16 @@ export default function TacticianDebate() {
       setIsDebating(false);
     }
   };
+
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen bg-[#0a0806] text-[#d4cbb3] font-serif p-4 md:p-8 flex items-center justify-center">
+        <div className="text-xl text-[#b89947] tracking-widest animate-pulse">
+          読み込み中...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#1a1512] text-[#d4cbb3] p-4 md:p-8 font-serif relative" style={{ backgroundImage: 'radial-gradient(#2b221a 1px, transparent 1px)', backgroundSize: '20px 20px' }}>

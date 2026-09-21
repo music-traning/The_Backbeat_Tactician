@@ -58,6 +58,7 @@ export const useRhythmDetector = ({
     setTempoState(t);
   }, []);
 
+  // Phase 19: Fix Stale Closure (Sync external props to internal refs)
   useEffect(() => {
     setLatencyOffsetState(initialOffset);
     latencyOffsetRef.current = initialOffset;

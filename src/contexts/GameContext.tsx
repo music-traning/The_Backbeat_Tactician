@@ -31,6 +31,7 @@ interface GameContextType {
   playerData: PlayerData;
   updatePlayerData: (sessionStats: PlayerStats, warlord: string) => void;
   resetPlayerData: () => void;
+  isLoaded: boolean;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -154,7 +155,8 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       setPlayMode,
       playerData,
       updatePlayerData,
-      resetPlayerData
+      resetPlayerData,
+      isLoaded
     }}>
       {children}
     </GameContext.Provider>
