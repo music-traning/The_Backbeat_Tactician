@@ -182,6 +182,8 @@ export const useRhythmDetector = ({
     current16thNoteRef.current++;
   };
 
+  const trainingStartTimeRef = useRef<number>(0);
+
   const dynamicThresholdRef = useRef<number>(TRANSIENT_THRESHOLD);
   const noiseBaselineSamplesRef = useRef<number[]>([]);
   const isMeasuringNoiseRef = useRef<boolean>(false);
@@ -290,51 +292,48 @@ export const useRhythmDetector = ({
         if (isCalibratingRef.current) {
             detectedTimesRef.current.push(exactTime);
         } else if (isTrainingRef.current) {
-            const history = beatsToScheduleRef.current;
-            if (history.length > 0) {
-                // exactTimeを基準に古いヒストリーを破棄
-                beatsToScheduleRef.current = history.filter(b => b.time > exactTime - 2.0);
-                
-                // キャリブレーションで得た補正値(ms)
-                const offsetMs = latencyOffsetRef.current * 1000;
-                
-                // 遅攻法（レイドバック）の場合は目標を25ms後ろにシフト
-                const targetShiftSeconds = playModeRef.current === 'laidback' ? 0.025 : 0;
-                
-                let nearestBeat = history[0];
-                let minAbsDiff = Infinity;
-                let finalRealDiffMs = 0;
-                
-                for (let i = 0; i < history.length; i++) {
-                    // 1. 生遅延(ms)の算出 (exactTimeを使用、さらにシフトを考慮)
-                    const shiftedTargetTime = history[i].time + targetShiftSeconds;
-                    const rawDelayMs = (exactTime - shiftedTargetTime) * 1000;
-                    
-                    // 2. 補正の適用: 実質のズレ(ms)
-                    const realDiffMs = rawDelayMs - offsetMs;
-                    
-                    // 3. 絶対値の処理: 最も近いビート（補正後のズレが最小のもの）を探す
-                    const absDiff = Math.abs(realDiffMs);
-                    
-                    if (absDiff < minAbsDiff) {
-                        minAbsDiff = absDiff;
-                        nearestBeat = history[i];
-                        finalRealDiffMs = realDiffMs;
-                    }
-                }
-                
-                const result: RhythmDataJSON = {
-                    expectedTime: nearestBeat.time,
-                    actualDetectedTime: exactTime,
-                    diffMs: parseFloat(finalRealDiffMs.toFixed(2))
-                };
-                
-                // 平均スコア計算などのために絶対値を保存する
-                trainingDiffsRef.current.push(Math.abs(result.diffMs));
-                if (process.env.NODE_ENV === 'development') {
-                    console.log(JSON.stringify(result));
-                }
-            }
+            const startTime = trainingStartTimeRef.current;
+            const beatDuration = 60.0 / tempoRef.current;
+            
+            // 裏拍の場合のシフト量
+            const offset = (targetBeatRef.current === '裏拍' ? beatDuration * 0.5 : 0);
+            
+            // 判定基準となる経過時間
+            // (正確なマッチングのため、レイテンシを考慮して補正した上で近い拍を探す)
+            const correctedExactTime = exactTime - latencyOffsetRef.current;
+            const elapsed = correctedExactTime - startTime;
+            
+            // 最も近い拍のインデックス
+            const closestBeatIndex = Math.round((elapsed - offset) / beatDuration);
+            
+            // 最終的な目標時間
+            const expectedTime = startTime + (closestBeatIndex * beatDuration) + offset;
+            
+            // キャリブレーションで得た補正値(ms)
+            const offsetMs = latencyOffsetRef.current * 1000;
+            
+            // 遅攻法（レイドバック）の場合は目標を25ms後ろにシフト
+            const targetShiftSeconds = playModeRef.current === 'laidback' ? 0.025 : 0;
+            const shiftedTargetTime = expectedTime + targetShiftSeconds;
+            
+            const rawDelayMs = (exactTime - shiftedTargetTime) * 1000;
+            const realDiffMs = rawDelayMs - offsetMs;
+            
+            const result: RhythmDataJSON = {
+                expectedTime,
+                actualDetectedTime: exactTime,
+                diffMs: parseFloat(realDiffMs.toFixed(2))
+            };
+            
+            console.log("【判定詳細】", {
+                exactTime,
+                expectedTime,
+                差分: exactTime - expectedTime,
+                targetBeat: targetBeatRef.current,
+                diffMs: result.diffMs
+            });
+            
+            trainingDiffsRef.current.push(Math.abs(result.diffMs));
         }
     }
   };
@@ -463,6 +462,7 @@ export const useRhythmDetector = ({
     
     if (audioCtxRef.current) {
         nextNoteTimeRef.current = audioCtxRef.current.currentTime + 0.1;
+        trainingStartTimeRef.current = nextNoteTimeRef.current;
         current16thNoteRef.current = 0;
     }
     
