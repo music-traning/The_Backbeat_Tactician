@@ -32,12 +32,16 @@ interface UseRhythmDetectorProps {
   initialOffset?: number;
   onOffsetChange?: (offset: number) => void;
   playMode?: 'just' | 'laidback';
+  metronomePattern?: '全拍' | '2・4拍' | '1・3拍';
+  targetBeat?: '表拍' | '裏拍';
 }
 
 export const useRhythmDetector = ({ 
   initialOffset = 0, 
   onOffsetChange, 
-  playMode = 'just' 
+  playMode = 'just',
+  metronomePattern = '全拍',
+  targetBeat = '表拍'
 }: UseRhythmDetectorProps = {}): UseRhythmDetectorReturn => {
   const [state, setState] = useState<DetectorState>('idle');
   const [latencyOffset, setLatencyOffsetState] = useState<number>(initialOffset);
@@ -68,6 +72,16 @@ export const useRhythmDetector = ({
   useEffect(() => {
     playModeRef.current = playMode;
   }, [playMode]);
+
+  const metronomePatternRef = useRef<'全拍' | '2・4拍' | '1・3拍'>(metronomePattern);
+  useEffect(() => {
+    metronomePatternRef.current = metronomePattern;
+  }, [metronomePattern]);
+
+  const targetBeatRef = useRef<'表拍' | '裏拍'>(targetBeat);
+  useEffect(() => {
+    targetBeatRef.current = targetBeat;
+  }, [targetBeat]);
 
   const [error, setError] = useState<string | null>(null);
 
@@ -168,11 +182,6 @@ export const useRhythmDetector = ({
     current16thNoteRef.current++;
   };
 
-  const scheduleNote = (beatNumber: number, time: number) => {
-    beatsToScheduleRef.current.push({ beatNumber, time });
-    playClick(time);
-  };
-
   const dynamicThresholdRef = useRef<number>(TRANSIENT_THRESHOLD);
   const noiseBaselineSamplesRef = useRef<number[]>([]);
   const isMeasuringNoiseRef = useRef<boolean>(false);
@@ -182,7 +191,32 @@ export const useRhythmDetector = ({
     
     if (isTrainingRef.current) {
       while (nextNoteTimeRef.current < audioCtxRef.current.currentTime + SCHEDULE_AHEAD_TIME) {
-        scheduleNote(current16thNoteRef.current, nextNoteTimeRef.current);
+        // beatInMeasure: 0 = 1st beat, 1 = 2nd beat, 2 = 3rd beat, 3 = 4th beat
+        const beatInMeasure = (current16thNoteRef.current % 4);
+        
+        let shouldPlayClick = false;
+        if (metronomePatternRef.current === '全拍') {
+            shouldPlayClick = true;
+        } else if (metronomePatternRef.current === '2・4拍') {
+            shouldPlayClick = (beatInMeasure === 1 || beatInMeasure === 3);
+        } else if (metronomePatternRef.current === '1・3拍') {
+            shouldPlayClick = (beatInMeasure === 0 || beatInMeasure === 2);
+        }
+        
+        const secondsPerBeat = 60.0 / tempoRef.current;
+        const evaluationTargetTime = targetBeatRef.current === '裏拍' 
+            ? nextNoteTimeRef.current + (secondsPerBeat * 0.5) 
+            : nextNoteTimeRef.current;
+            
+        beatsToScheduleRef.current.push({ 
+            beatNumber: current16thNoteRef.current, 
+            time: evaluationTargetTime 
+        });
+        
+        if (shouldPlayClick) {
+            playClick(nextNoteTimeRef.current);
+        }
+        
         nextNote();
       }
     } else if (isCalibratingRef.current && !isMeasuringNoiseRef.current) {

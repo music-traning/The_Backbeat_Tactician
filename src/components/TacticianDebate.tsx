@@ -38,7 +38,9 @@ export default function TacticianDebate() {
   } = useRhythmDetector({
     initialOffset: calibrationOffset,
     onOffsetChange: setCalibrationOffset,
-    playMode
+    playMode,
+    metronomePattern: currentStage?.metronomePattern || '全拍',
+    targetBeat: currentStage?.targetBeat || '表拍'
   });
   
   // Measurement Result State
