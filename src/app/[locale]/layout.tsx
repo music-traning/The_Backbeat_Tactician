@@ -3,6 +3,7 @@ import {getMessages, setRequestLocale} from 'next-intl/server';
 import {routing} from '@/i18n/routing';
 import {notFound} from 'next/navigation';
 import { GameProvider } from '@/contexts/GameContext';
+import { Analytics } from '@vercel/analytics/react';
 import '../globals.css'; // Assuming globals.css is in src/app
 
 export function generateStaticParams() {
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: '裏拍の軍師',
     description: 'ミリ秒単位のリズム判定で、歴史シミュレーション風のAI軍師と舌戦を繰り広げる音楽トレーニングアプリ。',
-    url: 'https://backbeat-tactician.vercel.app', // placeholder, can be changed
+    url: 'https://the-backbeat-tactician.vercel.app',
     siteName: '裏拍の軍師',
     locale: 'ja_JP',
     type: 'website',
@@ -70,6 +71,7 @@ export default async function LocaleLayout({
             </footer>
           </GameProvider>
         </NextIntlClientProvider>
+        <Analytics />
       </body>
     </html>
   );
