@@ -32,7 +32,7 @@ interface UseRhythmDetectorProps {
   initialOffset?: number;
   onOffsetChange?: (offset: number) => void;
   playMode?: 'just' | 'laidback';
-  metronomePattern?: '全拍' | '2・4拍' | '1・3拍';
+  metronomePattern?: '全拍' | '2・4拍' | '1・3拍' | '4拍目のみ';
   targetBeat?: '表拍' | '裏拍';
 }
 
@@ -73,7 +73,7 @@ export const useRhythmDetector = ({
     playModeRef.current = playMode;
   }, [playMode]);
 
-  const metronomePatternRef = useRef<'全拍' | '2・4拍' | '1・3拍'>(metronomePattern);
+  const metronomePatternRef = useRef<'全拍' | '2・4拍' | '1・3拍' | '4拍目のみ'>(metronomePattern);
   useEffect(() => {
     metronomePatternRef.current = metronomePattern;
   }, [metronomePattern]);
@@ -201,6 +201,8 @@ export const useRhythmDetector = ({
             shouldPlayClick = (beatInMeasure === 1 || beatInMeasure === 3);
         } else if (metronomePatternRef.current === '1・3拍') {
             shouldPlayClick = (beatInMeasure === 0 || beatInMeasure === 2);
+        } else if (metronomePatternRef.current === '4拍目のみ') {
+            shouldPlayClick = (beatInMeasure === 3);
         }
         
         const secondsPerBeat = 60.0 / tempoRef.current;
