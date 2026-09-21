@@ -213,7 +213,7 @@ export const useRhythmDetector = ({
         dataArrayRef.current = new Float32Array(bufferLength);
     }
     const dataArray = dataArrayRef.current;
-    analyserRef.current.getFloatTimeDomainData(dataArray as unknown as Float32Array<ArrayBuffer>);
+    analyserRef.current.getFloatTimeDomainData(dataArray as any);
 
     if (isMeasuringNoiseRef.current) {
         let maxVal = 0;

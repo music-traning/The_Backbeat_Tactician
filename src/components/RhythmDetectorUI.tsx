@@ -14,7 +14,7 @@ export default function RhythmDetectorUI() {
     startTraining,
     stop,
     error
-  } = useRhythmDetector();
+  } = useRhythmDetector({} as any);
 
   return (
     <div className="bg-neutral-800 p-6 rounded-lg shadow-xl">
