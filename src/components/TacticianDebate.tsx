@@ -368,6 +368,9 @@ export default function TacticianDebate() {
               <p className="text-xs text-[#b89947] opacity-90 mt-2">
                 ※検出されない場合は、PCの「マイク入力音量」を上げるか、OS側の「ノイズ抑制」設定をオフにしてください。有線接続（ループバックケーブル）が最も確実です。
               </p>
+              <p className="text-xs text-[#cda434] font-bold mt-4 bg-[#2b221a] p-3 border border-[#b89947]">
+                【推奨】オーディオインターフェースをご利用の方は、『ステレオミックス（ループバック）』機能をオンにして自動測定を行うことで、マイクとの物理的な距離や環境音に依存しない、最も正確なシステム遅延（純粋なハードウェアレイテンシ）を測定できます。
+              </p>
               
               <div className="text-center pt-6">
                 <button
@@ -659,8 +662,27 @@ export default function TacticianDebate() {
             
             <div className="text-center p-6 border border-[#b89947] bg-[#2b221a]">
               <div className="text-lg mb-2">平均のズレ</div>
-              <div className="text-5xl text-[#cda434] font-bold tracking-wider">
+              <div className="text-5xl text-[#cda434] font-bold tracking-wider mb-6">
                 {averageDiff !== null ? averageDiff.toFixed(1) : '--'} <span className="text-xl">ms</span>
+              </div>
+              
+              <div className="border-t border-[#4a3f32] pt-4 mt-2">
+                <p className="text-sm text-[#8a7f62] mb-3 text-left">
+                  ※常にマイナス（走り）が出る場合はオフセット値を減らし、プラス（遅れ）が出る場合は増やすことで環境遅延を相殺できます。
+                </p>
+                <button
+                  onClick={() => {
+                    if (averageDiff !== null) {
+                      const newOffset = calibrationOffset + (averageDiff / 1000);
+                      setCalibrationOffset(newOffset);
+                      setToastMessage(`キャリブレーション値を更新しました（新しいオフセット: ${(newOffset * 1000).toFixed(1)}ms）`);
+                    }
+                  }}
+                  disabled={averageDiff === null || isDebating}
+                  className="w-full py-2 bg-[#1a1512] border border-[#b89947] text-[#cda434] hover:bg-[#b89947] hover:text-[#14100c] transition-colors disabled:opacity-50 text-sm font-bold"
+                >
+                  この平均ズレをキャリブレーションに反映する
+                </button>
               </div>
             </div>
 

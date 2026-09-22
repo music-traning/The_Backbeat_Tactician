@@ -373,6 +373,11 @@ export const useRhythmDetector = ({
       }
     });
     
+    // 初期化ラグ（コールドスタート）による異常値を排除するため、最初の2回分のデータを破棄
+    if (validDelays.length > 2) {
+      validDelays = validDelays.slice(2);
+    }
+
     if (validDelays.length > 0) {
         // 外れ値を除外するため、中央値（Median）を計算する
         validDelays.sort((a, b) => a - b);
