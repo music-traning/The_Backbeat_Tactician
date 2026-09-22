@@ -110,10 +110,10 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     setPlayerDataState(prev => {
       const next = {
         baseStats: {
-          leadership: prev.baseStats.leadership + sessionStats.leadership / 10,
-          martial: prev.baseStats.martial + sessionStats.martial / 10,
-          intelligence: prev.baseStats.intelligence + sessionStats.intelligence / 10,
-          charm: prev.baseStats.charm + sessionStats.charm / 10,
+          leadership: Math.min(Math.round(prev.baseStats.leadership + sessionStats.leadership / 10), 999),
+          martial: Math.min(Math.round(prev.baseStats.martial + sessionStats.martial / 10), 999),
+          intelligence: Math.min(Math.round(prev.baseStats.intelligence + sessionStats.intelligence / 10), 999),
+          charm: Math.min(Math.round(prev.baseStats.charm + sessionStats.charm / 10), 999),
         },
         warlordHistory: {
           ...prev.warlordHistory,

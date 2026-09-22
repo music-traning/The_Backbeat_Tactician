@@ -5,17 +5,35 @@ import { STRATEGISTS, STAGES } from '@/lib/gameData';
 // Initialize Gemini API
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
+// Simple in-memory rate limiting
+const rateLimitMap = new Map<string, number>();
+
 export async function POST(req: NextRequest) {
   try {
+    const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+    const now = Date.now();
+    if (rateLimitMap.has(ip)) {
+      const lastRequest = rateLimitMap.get(ip)!;
+      if (now - lastRequest < 5000) {
+        return NextResponse.json({ error: '軍議の連続送信はできませぬ。心を落ち着かせよ。' }, { status: 429 });
+      }
+    }
+    rateLimitMap.set(ip, now);
+
     if (!process.env.GEMINI_API_KEY) {
       return NextResponse.json({ error: 'GEMINI_API_KEY is not configured.' }, { status: 500 });
     }
 
     const body = await req.json();
-    const { diffMs, userExcuse, strategistId, stageId, userGear, playMode } = body;
+    const { diffMs, userExcuse, strategistId, stageId, userGear, playMode, trainingDiffs } = body;
 
     if (diffMs === undefined || userExcuse === undefined || !strategistId || !stageId) {
       return NextResponse.json({ error: '軍議に必要な情報が欠落しています。' }, { status: 400 });
+    }
+    
+    // 入力バリデーション（スパム防止・型チェック）
+    if (!Array.isArray(trainingDiffs) || trainingDiffs.length > 200 || trainingDiffs.some(d => typeof d !== 'number')) {
+      return NextResponse.json({ error: '不正な練兵データが検出されました。' }, { status: 400 });
     }
     
     // バリデーション（プロンプトインジェクション・文字数制限）
