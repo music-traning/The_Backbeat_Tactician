@@ -333,7 +333,7 @@ export const useRhythmDetector = ({
                 diffMs: result.diffMs
             });
             
-            trainingDiffsRef.current.push(Math.abs(result.diffMs));
+            trainingDiffsRef.current.push(result.diffMs);
         }
     }
   };

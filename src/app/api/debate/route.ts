@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
     }
     
     // チート対策
-    if (diffMs <= 0 || diffMs > 10000) {
+    if (diffMs < 0 || diffMs > 10000) {
       return NextResponse.json({ error: '不正な練兵記録が検出されました。' }, { status: 400 });
     }
     
@@ -45,7 +45,11 @@ export async function POST(req: NextRequest) {
       : "ユーザーは完璧なジャストタイミング（誤差0ms）を狙って出陣しました。";
 
     // 2. プロンプトへの強制注入
-    const systemPrompt = `あなたは ${strategist.name} です。
+    const systemPrompt = `【超重要：絶対遵守する人格設定（ペルソナ）】
+${strategist.personaPrompt}
+
+【基本情報】
+あなたは ${strategist.name} です。
 ${strategist.systemPrompt}
 
 【現在の戦況（絶対の事実）】
@@ -54,6 +58,7 @@ ${strategist.systemPrompt}
 ・戦法: ${modeContext}
 ・ユーザーのズレ（絶対値平均）: ${diffMs} ms
 ・全打点のズレ配列: ${JSON.stringify(body.trainingDiffs)}
+  （※マイナスは目標より早い「走り/突っ込み」、プラスは目標より遅い「モタリ」を表します。これを詳細に分析してダメ出しや称賛の材料にしてください）
 ・合格ライン（許容誤差）: ${strategist.toleranceMs} ms 以下
 ・判定結果: ${isPassed ? '合格（ユーザーの勝利）' : '不合格（ユーザーの敗北）'}
 あなたの性格パラメーターは【${strategist.personality}】です。

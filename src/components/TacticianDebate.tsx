@@ -66,7 +66,7 @@ export default function TacticianDebate() {
         wasTraining.current = false;
         
         if (trainingDiffs && trainingDiffs.length > 0) {
-            const sum = trainingDiffs.reduce((acc, val) => acc + val, 0);
+            const sum = trainingDiffs.reduce((acc, val) => acc + Math.abs(val), 0);
             const avg = sum / trainingDiffs.length;
             setAverageDiff(Number(avg.toFixed(2)));
         } else {
@@ -667,6 +667,37 @@ export default function TacticianDebate() {
                 {averageDiff !== null ? averageDiff.toFixed(1) : '--'} <span className="text-xl">ms</span>
               </div>
             </div>
+
+            {/* 詳細な戦況（今回の打点履歴） */}
+            {trainingDiffs && trainingDiffs.length > 0 && (
+              <div className="bg-[#1a1512] border border-[#4a3f32] p-4">
+                <details className="group">
+                  <summary className="text-[#b89947] font-bold cursor-pointer hover:text-[#cda434] transition-colors outline-none select-none flex justify-between items-center">
+                    <span>【詳細な戦況（打点履歴）】</span>
+                    <span className="text-sm group-open:rotate-180 transition-transform">▼</span>
+                  </summary>
+                  <div className="mt-4 max-h-60 overflow-y-auto pr-2 space-y-2">
+                    {trainingDiffs.map((diff, idx) => {
+                      // diff is raw diffMs. Negative means early (突っ込み), Positive means late (モタリ)
+                      const isPerfect = Math.abs(diff) <= 15;
+                      const isEarly = diff < -15;
+                      const color = isPerfect ? 'text-green-500' : isEarly ? 'text-blue-400' : 'text-red-400';
+                      const label = isPerfect ? '見事' : isEarly ? '走り' : 'モタリ';
+                      
+                      return (
+                        <div key={idx} className="flex justify-between items-center text-sm border-b border-[#3a2f24] pb-1">
+                          <span className="text-[#8a7f62]">第 {idx + 1} 打</span>
+                          <span className={`font-mono w-24 text-right ${color}`}>
+                            {diff > 0 ? '+' : ''}{diff.toFixed(1)} ms
+                          </span>
+                          <span className={`w-12 text-center ${color}`}>{label}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </details>
+              </div>
+            )}
 
             <div className="space-y-4">
               <label className="block text-[#b89947]">【言い訳（反論）】</label>
