@@ -368,6 +368,9 @@ export default function TacticianDebate() {
               <p className="text-xs text-[#b89947] opacity-90 mt-2">
                 ※検出されない場合は、PCの「マイク入力音量」を上げるか、OS側の「ノイズ抑制」設定をオフにしてください。有線接続（ループバックケーブル）が最も確実です。
               </p>
+              <p className="text-xs text-[#b89947] opacity-90 mt-1">
+                ※ブラウザやデバイスの負荷状況（調子）によってシステム遅延は微細に変動するため、プレイ前のこまめな測定・微調整を推奨します。
+              </p>
               <p className="text-xs text-[#cda434] font-bold mt-4 bg-[#2b221a] p-3 border border-[#b89947]">
                 【推奨】オーディオインターフェースをご利用の方は、『ステレオミックス（ループバック）』機能をオンにして自動測定を行うことで、マイクとの物理的な距離や環境音に依存しない、最も正確なシステム遅延（純粋なハードウェアレイテンシ）を測定できます。
               </p>
@@ -673,9 +676,12 @@ export default function TacticianDebate() {
                 <button
                   onClick={() => {
                     if (averageDiff !== null) {
-                      const newOffset = calibrationOffset + (averageDiff / 1000);
-                      setCalibrationOffset(newOffset);
-                      setToastMessage(`キャリブレーション値を更新しました（新しいオフセット: ${(newOffset * 1000).toFixed(1)}ms）`);
+                      setConfirmMessage('現在の平均ズレを用いてキャリブレーション数値を更新します。よろしいですか？');
+                      setConfirmAction(() => () => {
+                        const newOffset = calibrationOffset + (averageDiff / 1000);
+                        setCalibrationOffset(newOffset);
+                        setToastMessage(`キャリブレーション値を更新しました（新しいオフセット: ${(newOffset * 1000).toFixed(1)}ms）`);
+                      });
                     }
                   }}
                   disabled={averageDiff === null || isDebating}
@@ -840,7 +846,20 @@ export default function TacticianDebate() {
               </div>
             )}
             
-            <div className="text-center pt-8">
+            <div className="text-center pt-8 flex flex-col items-center gap-6">
+                <button
+                  onClick={() => {
+                    setUserExcuse('');
+                    setAiReply(null);
+                    setDiagnosedWarlord(null);
+                    setSessionStats(null);
+                    setAverageDiff(null);
+                    setPhase('MEASUREMENT');
+                  }}
+                  className="px-8 py-3 bg-[#b89947] text-[#14100c] font-bold tracking-widest hover:bg-[#cda434] transition-colors shadow-[0_0_15px_rgba(184,153,71,0.3)]"
+                >
+                  もう一度出陣する
+                </button>
                 <button
                   onClick={() => {
                     setUserExcuse('');
