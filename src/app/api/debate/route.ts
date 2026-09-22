@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { diffMs, userExcuse, strategistId, stageId, userGear, playMode, trainingDiffs } = body;
+    const { diffMs, userExcuse, strategistId, stageId, userGear, playMode, trainingDiffs, playerRank } = body;
 
     if (diffMs === undefined || userExcuse === undefined || !strategistId || !stageId) {
       return NextResponse.json({ error: '軍議に必要な情報が欠落しています。' }, { status: 400 });
@@ -65,6 +65,7 @@ export async function POST(req: NextRequest) {
     // 2. プロンプトへの強制注入
     const systemPrompt = `【超重要：絶対遵守する人格設定（ペルソナ）】
 ${strategist.personaPrompt}
+現在のユーザーの官位（階級）は「${playerRank || '義勇兵'}」です。あなたは三国志の軍師として、相手の階級に応じた態度をとってください。義勇兵や什長などの下っ端であれば見下してぞんざいに扱い、将軍クラスであれば一定の敬意を払い、大将軍であれば平伏するような言葉遣いに変化させてください。
 
 【基本情報】
 あなたは ${strategist.name} です。

@@ -109,6 +109,8 @@ export default function TacticianDebate() {
     setSessionStats(null);
     
     try {
+      const currentPlayerRank = getRank(playerData.baseStats.leadership, playerData.baseStats.martial, playerData.baseStats.intelligence, playerData.baseStats.charm);
+
       const res = await fetch('/api/debate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -119,7 +121,8 @@ export default function TacticianDebate() {
           strategistId: currentStrategist.id,
           stageId: currentStage.id,
           userGear,
-          playMode
+          playMode,
+          playerRank: currentPlayerRank
         })
       });
       
