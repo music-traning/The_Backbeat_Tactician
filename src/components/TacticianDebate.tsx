@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { useRhythmDetector } from '@/hooks/useRhythmDetector';
 import { useGame } from '@/contexts/GameContext';
-import { STRATEGISTS, STAGES } from '@/lib/gameData';
+import { STRATEGISTS, STAGES, getRank } from '@/lib/gameData';
 
 type Phase = 'TITLE' | 'CALIBRATION' | 'FACTION_SELECT' | 'STRATEGIST_SELECT' | 'STAGE_SELECT' | 'HEARING' | 'MEASUREMENT' | 'DEBATE';
 
@@ -238,14 +238,7 @@ export default function TacticianDebate() {
                       <div className="text-sm text-[#8a7f62]">現在の官位</div>
                       <div className="text-3xl text-[#cda434] font-bold">
                         {(() => {
-                          const total = (playerData.baseStats.leadership + playerData.baseStats.martial + playerData.baseStats.intelligence + playerData.baseStats.charm);
-                          if (total < 10) return '義勇兵';
-                          if (total < 30) return '兵卒';
-                          if (total < 60) return '什長';
-                          if (total < 100) return '百人将';
-                          if (total < 200) return '校尉';
-                          if (total < 300) return '偏将軍';
-                          return '大将軍';
+                          return getRank(playerData.baseStats.leadership, playerData.baseStats.martial, playerData.baseStats.intelligence, playerData.baseStats.charm);
                         })()}
                       </div>
                     </div>
@@ -259,7 +252,7 @@ export default function TacticianDebate() {
                         <div key={s.label} className="flex items-center gap-2">
                           <span className="text-[#b89947] w-12 text-sm">{s.label}</span>
                           <div className="flex-1 bg-[#110e0a] h-2 border border-[#3a2f24]">
-                            <div className="bg-[#cda434] h-full" style={{ width: `${Math.min(100, (s.value / 100) * 100)}%` }} />
+                            <div className="bg-[#cda434] h-full" style={{ width: `${Math.min(100, (s.value / 999) * 100)}%` }} />
                           </div>
                           <span className="text-sm text-[#d4cbb3] w-8 text-right">{Math.floor(s.value)}</span>
                         </div>
@@ -769,14 +762,7 @@ export default function TacticianDebate() {
                           <div className="text-sm text-[#8a7f62]">現在の階級</div>
                           <div className="text-3xl text-[#cda434] font-bold">
                             {(() => {
-                              const total = (playerData.baseStats.leadership + playerData.baseStats.martial + playerData.baseStats.intelligence + playerData.baseStats.charm);
-                              if (total < 10) return '義勇兵';
-                              if (total < 30) return '兵卒';
-                              if (total < 60) return '什長';
-                              if (total < 100) return '百人将';
-                              if (total < 200) return '校尉';
-                              if (total < 300) return '偏将軍';
-                              return '大将軍';
+                              return getRank(playerData.baseStats.leadership, playerData.baseStats.martial, playerData.baseStats.intelligence, playerData.baseStats.charm);
                             })()}
                           </div>
                         </div>
@@ -790,7 +776,7 @@ export default function TacticianDebate() {
                             <div key={s.label} className="flex items-center gap-2">
                               <span className="text-[#b89947] w-12 text-sm">{s.label}</span>
                               <div className="flex-1 bg-[#110e0a] h-2 border border-[#3a2f24]">
-                                <div className="bg-[#cda434] h-full" style={{ width: `${Math.min(100, (s.value / 100) * 100)}%` }} />
+                                <div className="bg-[#cda434] h-full" style={{ width: `${Math.min(100, (s.value / 999) * 100)}%` }} />
                               </div>
                               <span className="text-sm text-[#d4cbb3] w-8 text-right">{Math.floor(s.value)}</span>
                             </div>

@@ -60,5 +60,21 @@ export const STAGES: Stage[] = [
   { id: 'stage_9', title: '第九陣', bpm: 40, metronomePattern: '全拍', targetBeat: '表拍', description: 'BPM40。極端に遅いテンポ。1拍の長さが永遠に感じられる中、正確に表拍を撃て。' },
   { id: 'stage_10', title: '第十陣', bpm: 40, metronomePattern: '2・4拍', targetBeat: '表拍', description: 'BPM40。遅いテンポかつ2・4拍目のみ。広大な隙間を埋めるリズム感が試される。' },
   { id: 'stage_11', title: '第十一陣', bpm: 40, metronomePattern: '4拍目のみ', targetBeat: '表拍', description: 'BPM40。1小節に1度、4拍目しか鳴らない。深い霧の中で方向を見失うな。' },
-  { id: 'stage_12', title: '第十二陣', bpm: 40, metronomePattern: '4拍目のみ', targetBeat: '裏拍', description: 'BPM40。究極の陣。4拍目のガイドのみで、暗闇の中の裏拍を射抜く。己の魂の律動のみを信じよ。' }
+  { id: "stage_12", title: "第十二陣", bpm: 40, metronomePattern: "4拍目のみ", targetBeat: "裏拍", description: "BPM40。究極の陣。4拍目のガイドのみで、暗闇の中の裏拍を射抜く。己の魂の律動のみを信じよ。" }
 ];
+
+export const getRank = (leadership: number, martial: number, intelligence: number, charm: number): string => {
+  const maxStat = Math.max(leadership, martial, intelligence, charm);
+  if (maxStat < 100) return '義勇兵';
+  if (maxStat < 200) return '什長';
+  if (maxStat < 300) return '伯長';
+  if (maxStat < 400) return '都尉';
+  if (maxStat < 500) return '校尉';
+  if (maxStat < 600) return '偏将軍';
+  if (maxStat < 700) return '裨将軍';
+  if (maxStat < 800) return '雑号将軍';
+  if (maxStat < 900) return '四征将軍';
+  if (maxStat < 950) return '衛将軍';
+  if (maxStat < 999) return '驃騎将軍';
+  return '大将軍';
+};
