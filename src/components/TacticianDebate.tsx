@@ -10,6 +10,7 @@ type Phase = 'TITLE' | 'CALIBRATION' | 'FACTION_SELECT' | 'STRATEGIST_SELECT' | 
 
 export default function TacticianDebate() {
   const [phase, setPhase] = useState<Phase>('TITLE');
+  const [returnPhase, setReturnPhase] = useState<Phase | null>(null);
   const [selectedFaction, setSelectedFaction] = useState<'魏' | '呉' | '蜀' | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   
@@ -411,9 +412,21 @@ export default function TacticianDebate() {
             </div>
             
             <div className="text-center mt-8">
-              <button onClick={() => setPhase('TITLE')} className="text-sm opacity-70 hover:opacity-100 hover:text-[#b89947] transition-colors">
-                タイトルへ戻る
-              </button>
+              {returnPhase ? (
+                <button 
+                  onClick={() => {
+                    setPhase(returnPhase);
+                    setReturnPhase(null);
+                  }} 
+                  className="text-sm opacity-70 hover:opacity-100 hover:text-[#b89947] transition-colors"
+                >
+                  戦場へ戻る
+                </button>
+              ) : (
+                <button onClick={() => setPhase('TITLE')} className="text-sm opacity-70 hover:opacity-100 hover:text-[#b89947] transition-colors">
+                  タイトルへ戻る
+                </button>
+              )}
             </div>
           </div>
         )}
@@ -675,6 +688,7 @@ export default function TacticianDebate() {
                 </p>
                 <button
                   onClick={() => {
+                    setReturnPhase('DEBATE');
                     setPhase('CALIBRATION');
                   }}
                   disabled={isDebating}
