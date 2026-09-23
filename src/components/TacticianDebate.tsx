@@ -66,7 +66,7 @@ export default function TacticianDebate() {
         wasTraining.current = false;
         
         if (trainingDiffs && trainingDiffs.length > 0) {
-            const sum = trainingDiffs.reduce((acc, val) => acc + Math.abs(val), 0);
+            const sum = trainingDiffs.reduce((acc, val) => acc + val, 0);
             const avg = sum / trainingDiffs.length;
             setAverageDiff(Number(avg.toFixed(2)));
         } else {
@@ -671,23 +671,16 @@ export default function TacticianDebate() {
               
               <div className="border-t border-[#4a3f32] pt-4 mt-2">
                 <p className="text-sm text-[#8a7f62] mb-3 text-left">
-                  ※常にマイナス（走り）が出る場合はオフセット値を減らし、プラス（遅れ）が出る場合は増やすことで環境遅延を相殺できます。
+                  ※ズレが気になる場合は、再度キャリブレーション（遅延測定）を行って環境を調整してください。
                 </p>
                 <button
                   onClick={() => {
-                    if (averageDiff !== null) {
-                      setConfirmMessage('現在の平均ズレを用いてキャリブレーション数値を更新します。よろしいですか？');
-                      setConfirmAction(() => () => {
-                        const newOffset = calibrationOffset + (averageDiff / 1000);
-                        setCalibrationOffset(newOffset);
-                        setToastMessage(`キャリブレーション値を更新しました（新しいオフセット: ${(newOffset * 1000).toFixed(1)}ms）`);
-                      });
-                    }
+                    setPhase('CALIBRATION');
                   }}
-                  disabled={averageDiff === null || isDebating}
+                  disabled={isDebating}
                   className="w-full py-2 bg-[#1a1512] border border-[#b89947] text-[#cda434] hover:bg-[#b89947] hover:text-[#14100c] transition-colors disabled:opacity-50 text-sm font-bold"
                 >
-                  この平均ズレをキャリブレーションに反映する
+                  キャリブレーションを再設定する
                 </button>
               </div>
             </div>
@@ -859,6 +852,19 @@ export default function TacticianDebate() {
                   className="px-8 py-3 bg-[#b89947] text-[#14100c] font-bold tracking-widest hover:bg-[#cda434] transition-colors shadow-[0_0_15px_rgba(184,153,71,0.3)]"
                 >
                   もう一度出陣する
+                </button>
+                <button
+                  onClick={() => {
+                    setUserExcuse('');
+                    setAiReply(null);
+                    setDiagnosedWarlord(null);
+                    setSessionStats(null);
+                    setAverageDiff(null);
+                    setPhase('STAGE_SELECT');
+                  }}
+                  className="px-6 py-2 border border-[#b89947] text-[#cda434] hover:bg-[#b89947] hover:text-[#14100c] transition-colors"
+                >
+                  他の陣に移動する
                 </button>
                 <button
                   onClick={() => {
