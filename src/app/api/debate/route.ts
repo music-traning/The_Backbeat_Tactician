@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     }
     
     // チート対策
-    if (diffMs < 0 || diffMs > 10000) {
+    if (Math.abs(diffMs) > 10000) {
       return NextResponse.json({ error: '不正な練兵記録が検出されました。' }, { status: 400 });
     }
     
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
     const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash-lite' });
 
     // 1. 合否の事前計算
-    const isPassed = diffMs <= strategist.toleranceMs;
+    const isPassed = Math.abs(diffMs) <= strategist.toleranceMs;
     
     const modeContext = playMode === 'laidback'
       ? "ユーザーは、ジャズやR&B特有の心地よいタメ（+25msのビハインド・ザ・ビート）を『意図的』に狙うという高度な戦法（遅攻法）で出陣しました。単なる遅れとして非難するのではなく、その『タメの精度（シフトした目標からのズレ）』を評価基準として舌戦を展開してください。"
@@ -75,7 +75,7 @@ ${strategist.systemPrompt}
 ・ステージ: ${stage.title} (BPM: ${stage.bpm}, ターゲット: ${stage.targetBeat})
 ・ユーザーの機材: ${userGear || '申告なし'}
 ・戦法: ${modeContext}
-・ユーザーのズレ（絶対値平均）: ${diffMs} ms
+・ユーザーのズレの平均（マイナスは走り）: ${diffMs} ms
 ・全打点のズレ配列: ${JSON.stringify(body.trainingDiffs)}
   （※マイナスは目標より早い「走り/突っ込み」、プラスは目標より遅い「モタリ」を表します。これを詳細に分析してダメ出しや称賛の材料にしてください）
 ・合格ライン（許容誤差）: ${strategist.toleranceMs} ms 以下
